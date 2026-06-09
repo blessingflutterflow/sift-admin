@@ -3,7 +3,7 @@ import { getDriverLocation } from "@/lib/drivers";
 
 export const dynamic = "force-dynamic";
 
-const GREEN = "#35C77A";
+const GREEN = "#FF6B2C";
 
 export default async function DriverDetailPage({
   params,
@@ -51,7 +51,7 @@ export default async function DriverDetailPage({
                 <h2 className="font-semibold">{driver.name}</h2>
                 <span
                   className="rounded-full px-2 py-0.5 text-xs font-semibold"
-                  style={{ background: "#DCFAED", color: "#19A970" }}
+                  style={{ background: "#FFE7D6", color: "#E2551C" }}
                 >
                   Online
                 </span>

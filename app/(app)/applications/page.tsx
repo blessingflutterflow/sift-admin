@@ -3,7 +3,7 @@ import { reviewAction } from "@/app/actions";
 
 export const dynamic = "force-dynamic";
 
-const GREEN = "#35C77A";
+const GREEN = "#FF6B2C";
 
 export default async function ApplicationsPage() {
   const apps = await listApplications();
@@ -70,7 +70,7 @@ function Empty({ label }: { label: string }) {
 function StatusBadge({ status }: { status: Application["status"] }) {
   const styles: Record<string, string> = {
     pending: "bg-amber-100 text-amber-700",
-    approved: "bg-emerald-100 text-emerald-700",
+    approved: "bg-orange-100 text-orange-700",
     rejected: "bg-rose-100 text-rose-700",
   };
   return (

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions";
 
-const GREEN = "#35C77A";
+const GREEN = "#FF6B2C";
 
 const NAV = [
   { href: "/", label: "Live map", icon: "🗺️" },

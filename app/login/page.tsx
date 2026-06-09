@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const GREEN = "#35C77A";
+const GREEN = "#FF6B2C";
 
 async function login(formData: FormData) {
   "use server";

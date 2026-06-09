@@ -108,7 +108,7 @@ function RoleBadge({ role }: { role: AppUser["role"] }) {
 
 function StatusBadge({ status }: { status: AppUser["status"] }) {
   const styles: Record<string, string> = {
-    approved: "bg-emerald-100 text-emerald-700",
+    approved: "bg-orange-100 text-orange-700",
     pending: "bg-amber-100 text-amber-700",
     rejected: "bg-rose-100 text-rose-700",
     none: "bg-zinc-100 text-zinc-500",

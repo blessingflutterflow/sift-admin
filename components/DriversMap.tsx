@@ -18,7 +18,7 @@ const JHB: [number, number] = [-26.2041, 28.0473];
 
 const driverIcon = L.divIcon({
   className: "",
-  html: `<div style="width:34px;height:34px;border-radius:50%;background:#35C77A;
+  html: `<div style="width:34px;height:34px;border-radius:50%;background:#FF6B2C;
     border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);
     display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🚗</div>`,
   iconSize: [34, 34],
@@ -64,7 +64,7 @@ export default function DriversMap() {
               <br />
               <span style={{ color: "#666" }}>{d.vehicle ?? "Driver"}</span>
               <br />
-              <Link href={`/drivers/${d.uid}`} style={{ color: "#35C77A", fontWeight: 600 }}>
+              <Link href={`/drivers/${d.uid}`} style={{ color: "#FF6B2C", fontWeight: 600 }}>
                 Open details →
               </Link>
             </div>
