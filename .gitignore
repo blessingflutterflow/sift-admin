@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Firebase service account (never commit)
+serviceAccountKey.json
+
+# Keep the env template in the repo
+!.env.example
