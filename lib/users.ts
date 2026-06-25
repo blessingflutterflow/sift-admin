@@ -7,6 +7,7 @@ export type AppUser = {
   email: string;
   role: "rider" | "driver" | "unknown";
   status: "none" | "pending" | "approved" | "rejected";
+  blocked: boolean;
 };
 
 export async function listUsers(): Promise<AppUser[]> {
@@ -21,6 +22,7 @@ export async function listUsers(): Promise<AppUser[]> {
       email: x.email ?? "",
       role,
       status: (x.status ?? "none") as AppUser["status"],
+      blocked: x.blocked === true,
     } satisfies AppUser;
   });
   users.sort((a, b) => a.name.localeCompare(b.name));

@@ -9,8 +9,13 @@ const GREEN = "#FF6B2C";
 
 const NAV = [
   { href: "/", label: "Live map", icon: "🗺️" },
+  { href: "/rides", label: "Rides", icon: "🚕" },
+  { href: "/finance", label: "Finance", icon: "💳" },
+  { href: "/pricing", label: "Pricing", icon: "⚙️" },
+  { href: "/zones", label: "Surge zones", icon: "⚡" },
   { href: "/users", label: "Users", icon: "👥" },
   { href: "/applications", label: "Applications", icon: "📋" },
+  { href: "/audit", label: "Audit log", icon: "📜" },
 ];
 
 function isActive(pathname: string, href: string) {

@@ -1,3 +1,4 @@
+import { toggleBlockAction } from "@/app/actions";
 import { listUsers, type AppUser } from "@/lib/users";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export default async function UsersPage() {
               <th className="px-5 py-3 font-semibold">Contact</th>
               <th className="px-5 py-3 font-semibold">Role</th>
               <th className="px-5 py-3 font-semibold">Status</th>
+              <th className="px-5 py-3 font-semibold">Access</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
@@ -47,6 +49,9 @@ export default async function UsersPage() {
                 </td>
                 <td className="px-5 py-3">
                   <StatusBadge status={u.status} />
+                </td>
+                <td className="px-5 py-3">
+                  <BlockToggle user={u} />
                 </td>
               </tr>
             ))}
@@ -75,11 +80,30 @@ export default async function UsersPage() {
             <div className="mt-3 flex items-center gap-2">
               <RoleBadge role={u.role} />
               <StatusBadge status={u.status} />
+              <BlockToggle user={u} />
             </div>
           </div>
         ))}
       </div>
     </div>
+  );
+}
+
+function BlockToggle({ user }: { user: AppUser }) {
+  return (
+    <form action={toggleBlockAction} className="inline">
+      <input type="hidden" name="uid" value={user.uid} />
+      <input type="hidden" name="block" value={String(!user.blocked)} />
+      {user.blocked ? (
+        <button className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-600 hover:bg-rose-100">
+          blocked · unblock
+        </button>
+      ) : (
+        <button className="rounded-full border border-zinc-200 px-2.5 py-0.5 text-xs font-semibold text-zinc-500 hover:bg-zinc-50">
+          block
+        </button>
+      )}
+    </form>
   );
 }
 
