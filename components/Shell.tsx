@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions";
+import { canAccess, ROLE_LABELS, type AdminRole } from "@/lib/adminAuth";
 
 const GREEN = "#FF6B2C";
 
@@ -17,6 +18,7 @@ const NAV = [
   { href: "/users", label: "Users", icon: "👥" },
   { href: "/applications", label: "Applications", icon: "📋" },
   { href: "/verifications", label: "Verifications", icon: "🪪" },
+  { href: "/admins", label: "Admins", icon: "🛡️" },
   { href: "/audit", label: "Audit log", icon: "📜" },
 ];
 
@@ -25,13 +27,22 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export default function Shell({ children }: { children: React.ReactNode }) {
+export default function Shell({
+  children,
+  role,
+  name,
+}: {
+  children: React.ReactNode;
+  role: AdminRole;
+  name: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const items = NAV.filter((item) => canAccess(role, item.href));
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 p-3">
-      {NAV.map((item) => {
+      {items.map((item) => {
         const active = isActive(pathname, item.href);
         return (
           <Link
@@ -69,11 +80,17 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   );
 
   const signOut = (
-    <form action={logout} className="p-3">
-      <button className="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-50">
-        Sign out
-      </button>
-    </form>
+    <div className="p-3">
+      <div className="mb-2 rounded-lg bg-zinc-50 px-3 py-2">
+        <p className="truncate text-sm font-semibold text-zinc-900">{name}</p>
+        <p className="text-xs text-zinc-500">{ROLE_LABELS[role]}</p>
+      </div>
+      <form action={logout}>
+        <button className="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-50">
+          Sign out
+        </button>
+      </form>
+    </div>
   );
 
   return (

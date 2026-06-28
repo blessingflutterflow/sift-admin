@@ -7,9 +7,20 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { audit } from "@/lib/audit";
 import { ACTIVE_STATUSES } from "@/lib/rides";
+import { getSession } from "@/lib/adminSession";
+import { hashPassword, type AdminRole } from "@/lib/adminAuth";
+
+const ADMIN_ROLES: AdminRole[] = [
+  "dispatcher", "onboarding", "support", "finance", "fleet", "superadmin",
+];
+
+async function requireSuperadmin() {
+  const s = await getSession();
+  if (!s || s.role !== "superadmin") throw new Error("Forbidden");
+}
 
 export async function logout() {
-  (await cookies()).delete("sift_admin_auth");
+  (await cookies()).delete("sift_admin_session");
   redirect("/login");
 }
 
@@ -264,6 +275,50 @@ export async function reviewVerificationAction(formData: FormData) {
     .set({ verificationStatus: decision }, { merge: true });
   await audit(`verification.${decision}`, uid);
   revalidatePath("/verifications");
+}
+
+// --- Sub-admins (super-admin only) -----------------------------------------
+
+export async function createAdminAction(formData: FormData) {
+  await requireSuperadmin();
+  const username = String(formData.get("username") ?? "").trim().toLowerCase();
+  const name = String(formData.get("name") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const role = String(formData.get("role") ?? "") as AdminRole;
+  if (!username || password.length < 6 || !ADMIN_ROLES.includes(role)) return;
+
+  await getAdminDb().collection("admin_users").doc(username).set({
+    username,
+    name: name || username,
+    role,
+    passwordHash: await hashPassword(password),
+    active: true,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+  await audit("admin.create", username, role);
+  revalidatePath("/admins");
+}
+
+export async function toggleAdminAction(formData: FormData) {
+  await requireSuperadmin();
+  const username = String(formData.get("username") ?? "");
+  const active = String(formData.get("active") ?? "") === "true";
+  if (!username) return;
+  await getAdminDb()
+    .collection("admin_users")
+    .doc(username)
+    .set({ active }, { merge: true });
+  await audit(active ? "admin.enable" : "admin.disable", username);
+  revalidatePath("/admins");
+}
+
+export async function deleteAdminAction(formData: FormData) {
+  await requireSuperadmin();
+  const username = String(formData.get("username") ?? "");
+  if (!username) return;
+  await getAdminDb().collection("admin_users").doc(username).delete();
+  await audit("admin.delete", username);
+  revalidatePath("/admins");
 }
 
 /** Block/unblock a user (enforced server-side in dispatch). */
