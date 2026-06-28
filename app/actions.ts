@@ -134,6 +134,7 @@ export async function savePricingAction(formData: FormData) {
     // City-wide surge applied when no zone covers the pickup (0.5×–5×).
     surgeMultiplier: Math.min(5, Math.max(0.5, num("surgeMultiplier", 1))),
     tierMultipliers: {
+      bike: num("multBike", 0.7),
       go: num("multGo", 1.0),
       xl: num("multXl", 1.45),
       max: num("multMax", 1.9),
@@ -172,6 +173,31 @@ export async function ledgerAdjustAction(formData: FormData) {
   await batch.commit();
   await audit("ledger.adjust", uid, `R${amount}${note ? ` — ${note}` : ""}`);
   revalidatePath("/finance");
+}
+
+/** Live parcel-pricing editor — the next parcel quote uses these immediately. */
+export async function saveParcelPricingAction(formData: FormData) {
+  const num = (k: string, fallback: number) => {
+    const v = Number(formData.get(k));
+    return Number.isFinite(v) && v >= 0 ? v : fallback;
+  };
+  const next = {
+    base: num("base", 25),
+    perKm: num("perKm", 6),
+    perStop: num("perStop", 10),
+    commissionPct: Math.min(num("commissionPctPercent", 20), 90) / 100,
+    cancelFee: num("cancelFee", 20),
+    sizeSurcharge: {
+      small: num("sizeSmall", 0),
+      medium: num("sizeMedium", 15),
+      large: num("sizeLarge", 35),
+    },
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+  await getAdminDb().collection("config").doc("parcelPricing").set(next, { merge: true });
+  await audit("parcelPricing.update", "config/parcelPricing",
+    JSON.stringify({ ...next, updatedAt: undefined }));
+  revalidatePath("/parcels");
 }
 
 // --- Surge zones (circles) -------------------------------------------------

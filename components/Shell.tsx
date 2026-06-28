@@ -10,6 +10,7 @@ const GREEN = "#FF6B2C";
 const NAV = [
   { href: "/", label: "Live map", icon: "🗺️" },
   { href: "/rides", label: "Rides", icon: "🚕" },
+  { href: "/parcels", label: "Parcels", icon: "📦" },
   { href: "/finance", label: "Finance", icon: "💳" },
   { href: "/pricing", label: "Pricing", icon: "⚙️" },
   { href: "/zones", label: "Surge zones", icon: "⚡" },

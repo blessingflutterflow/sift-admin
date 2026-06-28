@@ -31,7 +31,12 @@ export default async function PricingPage() {
         <h2 className="mb-3 mt-6 text-sm font-bold text-zinc-900">
           Tier multipliers
         </h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <Field
+            label="Sift Bike"
+            name="multBike"
+            value={p.tierMultipliers.bike ?? 0.7}
+          />
           <Field label="Sift Go" name="multGo" value={p.tierMultipliers.go} />
           <Field label="Sift XL" name="multXl" value={p.tierMultipliers.xl} />
           <Field label="Sift Max" name="multMax" value={p.tierMultipliers.max} />
