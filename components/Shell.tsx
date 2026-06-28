@@ -16,6 +16,7 @@ const NAV = [
   { href: "/zones", label: "Surge zones", icon: "⚡" },
   { href: "/users", label: "Users", icon: "👥" },
   { href: "/applications", label: "Applications", icon: "📋" },
+  { href: "/verifications", label: "Verifications", icon: "🪪" },
   { href: "/audit", label: "Audit log", icon: "📜" },
 ];
 

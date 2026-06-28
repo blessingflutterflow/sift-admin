@@ -252,6 +252,20 @@ export async function deleteZoneAction(formData: FormData) {
   revalidatePath("/zones");
 }
 
+/** Approve/reject a rider's identity verification (manual review of a
+ *  borderline face-match). */
+export async function reviewVerificationAction(formData: FormData) {
+  const uid = String(formData.get("uid") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  if (!uid || !["approved", "rejected"].includes(decision)) return;
+  await getAdminDb()
+    .collection("users")
+    .doc(uid)
+    .set({ verificationStatus: decision }, { merge: true });
+  await audit(`verification.${decision}`, uid);
+  revalidatePath("/verifications");
+}
+
 /** Block/unblock a user (enforced server-side in dispatch). */
 export async function toggleBlockAction(formData: FormData) {
   const uid = String(formData.get("uid") ?? "");

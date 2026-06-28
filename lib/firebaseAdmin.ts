@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 // Service account credentials: in production (Vercel) from the
 // FIREBASE_SERVICE_ACCOUNT env var (the full JSON); in local dev from the
@@ -25,4 +26,9 @@ function adminApp(): App {
 /** Lazily resolve Firestore — defers reading the key file to request time. */
 export function getAdminDb() {
   return getFirestore(adminApp());
+}
+
+/** Storage bucket (for signed URLs of verification images, PODs, etc.). */
+export function getAdminBucket() {
+  return getStorage(adminApp()).bucket("sift-d1cf4.firebasestorage.app");
 }
