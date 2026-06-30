@@ -27,11 +27,12 @@ export const ROLE_LABELS: Record<AdminRole, string> = {
 export const ROLE_NAV: Record<AdminRole, string[]> = {
   superadmin: [
     "/", "/rides", "/parcels", "/finance", "/pricing", "/zones",
-    "/users", "/applications", "/verifications", "/audit", "/admins", "/drivers",
+    "/users", "/applications", "/verifications", "/audit", "/admins",
+    "/drivers", "/support",
   ],
   dispatcher: ["/", "/rides", "/parcels", "/drivers"],
   onboarding: ["/applications", "/verifications", "/users", "/drivers"],
-  support: ["/users", "/rides", "/parcels", "/drivers"],
+  support: ["/users", "/rides", "/parcels", "/drivers", "/support"],
   finance: ["/finance", "/pricing", "/parcels"],
   fleet: ["/", "/rides", "/drivers"],
 };

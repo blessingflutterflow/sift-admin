@@ -5,6 +5,7 @@ import {
 } from "@/app/actions";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { ROLE_LABELS, type AdminRole } from "@/lib/adminAuth";
+import PageHeader from "@/components/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -17,34 +18,37 @@ const ASSIGNABLE: AdminRole[] = [
 type AdminRow = { username: string; name: string; role: AdminRole; active: boolean };
 
 async function loadAdmins(): Promise<AdminRow[]> {
-  const snap = await getAdminDb().collection("admin_users").get();
-  return snap.docs
-    .map((d) => {
-      const x = d.data();
-      return {
-        username: d.id,
-        name: String(x.name ?? d.id),
-        role: (x.role as AdminRole) ?? "support",
-        active: x.active !== false,
-      };
-    })
-    .sort((a, b) => a.username.localeCompare(b.username));
+  try {
+    const snap = await getAdminDb().collection("admin_users").get();
+    return snap.docs
+      .map((d) => {
+        const x = d.data();
+        return {
+          username: d.id,
+          name: String(x.name ?? d.id),
+          role: (x.role as AdminRole) ?? "support",
+          active: x.active !== false,
+        };
+      })
+      .sort((a, b) => a.username.localeCompare(b.username));
+  } catch {
+    // Never let a transient Firestore hiccup make the page fail to open —
+    // render the form with an empty list instead of a 500.
+    return [];
+  }
 }
 
 export default async function AdminsPage() {
   const admins = await loadAdmins();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900">
-          Admins
-        </h1>
-        <p className="text-sm text-zinc-500">
-          Staff accounts. Each role only sees the sections it needs. The owner
-          login (shared password) is always a super-admin.
-        </p>
-      </div>
+    <div className="mx-auto max-w-3xl px-4 py-7 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Team"
+        icon="admins"
+        title="Admins"
+        subtitle="Staff accounts. Each role only sees the sections it needs. The owner login (shared password) is always a super-admin."
+      />
 
       {/* Add */}
       <form

@@ -154,6 +154,7 @@ export type PricingConfig = {
   cashDebtCapZar: number;
   cashEnabled: boolean;
   surgeMultiplier: number;
+  dispatchRadiusKm: number;
   tierMultipliers: Record<string, number>;
 };
 
@@ -167,6 +168,7 @@ const PRICING_DEFAULTS: PricingConfig = {
   cashDebtCapZar: 300,
   cashEnabled: true,
   surgeMultiplier: 1.0,
+  dispatchRadiusKm: 20,
   tierMultipliers: { go: 1.0, xl: 1.45, max: 1.9 },
 };
 

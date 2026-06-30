@@ -9,9 +9,9 @@ import {
 /**
  * Gate every dashboard route: must have a valid signed session, and the
  * session's role must be allowed to reach that path. Otherwise bounce to login
- * or to the role's first allowed page.
+ * or to the role's first allowed page. (Next 16 "proxy" = former middleware.)
  */
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const session = await verifySession(req.cookies.get(SESSION_COOKIE)?.value);
 
@@ -31,6 +31,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Everything except the login page, API routes and Next internals/static.
   matcher: ["/((?!login|api|_next/static|_next/image|favicon.ico).*)"],
 };

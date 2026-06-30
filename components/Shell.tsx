@@ -2,24 +2,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions";
 import { canAccess, ROLE_LABELS, type AdminRole } from "@/lib/adminAuth";
+import { Icon } from "@/components/Icon";
 
-const GREEN = "#FF6B2C";
-
-const NAV = [
-  { href: "/", label: "Live map", icon: "🗺️" },
-  { href: "/rides", label: "Rides", icon: "🚕" },
-  { href: "/parcels", label: "Parcels", icon: "📦" },
-  { href: "/finance", label: "Finance", icon: "💳" },
-  { href: "/pricing", label: "Pricing", icon: "⚙️" },
-  { href: "/zones", label: "Surge zones", icon: "⚡" },
-  { href: "/users", label: "Users", icon: "👥" },
-  { href: "/applications", label: "Applications", icon: "📋" },
-  { href: "/verifications", label: "Verifications", icon: "🪪" },
-  { href: "/admins", label: "Admins", icon: "🛡️" },
-  { href: "/audit", label: "Audit log", icon: "📜" },
+const NAV: { href: string; label: string; icon: string }[] = [
+  { href: "/", label: "Live map", icon: "map" },
+  { href: "/rides", label: "Rides", icon: "rides" },
+  { href: "/parcels", label: "Parcels", icon: "parcels" },
+  { href: "/finance", label: "Finance", icon: "finance" },
+  { href: "/pricing", label: "Pricing", icon: "pricing" },
+  { href: "/zones", label: "Surge zones", icon: "zones" },
+  { href: "/users", label: "Users", icon: "users" },
+  { href: "/applications", label: "Applications", icon: "applications" },
+  { href: "/verifications", label: "Verifications", icon: "verifications" },
+  { href: "/support", label: "Support", icon: "support" },
+  { href: "/admins", label: "Admins", icon: "admins" },
+  { href: "/audit", label: "Audit log", icon: "audit" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -41,7 +42,7 @@ export default function Shell({
   const items = NAV.filter((item) => canAccess(role, item.href));
 
   const nav = (
-    <nav className="flex flex-1 flex-col gap-1 p-3">
+    <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-3 py-4">
       {items.map((item) => {
         const active = isActive(pathname, item.href);
         return (
@@ -49,15 +50,19 @@ export default function Shell({
             key={item.href}
             href={item.href}
             onClick={() => setOpen(false)}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+            className={`group flex items-center gap-3.5 rounded-full px-4 py-2.5 text-[15px] font-bold transition-all ${
               active
-                ? "text-white"
-                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                ? "bg-sift text-white shadow-soft"
+                : "text-charcoal hover:bg-bone"
             }`}
-            style={active ? { background: GREEN } : undefined}
           >
-            <span className="text-base">{item.icon}</span>
-            {item.label}
+            <Icon
+              name={item.icon}
+              size={24}
+              color={active ? "#ffffff" : undefined}
+              className={active ? "" : "text-ink/80"}
+            />
+            <span className="tracking-tight">{item.label}</span>
           </Link>
         );
       })}
@@ -65,40 +70,47 @@ export default function Shell({
   );
 
   const brand = (
-    <div className="flex items-center gap-2.5 px-4 py-4">
-      <div
-        className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
-        style={{ background: GREEN }}
-      >
-        ⚡
+    <Link href="/" className="flex items-center gap-3 px-5 py-5">
+      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-line">
+        <Image src="/brand/logo-full.png" alt="Sift" width={44} height={44} />
       </div>
-      <div>
-        <p className="text-sm font-bold leading-none text-zinc-900">Sift</p>
-        <p className="text-xs text-zinc-400">Admin</p>
+      <div className="leading-none">
+        <p className="text-xl font-extrabold tracking-tighter text-ink">Sift</p>
+        <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.18em] text-slate">
+          Admin
+        </p>
       </div>
-    </div>
+    </Link>
   );
 
   const signOut = (
     <div className="p-3">
-      <div className="mb-2 rounded-lg bg-zinc-50 px-3 py-2">
-        <p className="truncate text-sm font-semibold text-zinc-900">{name}</p>
-        <p className="text-xs text-zinc-500">{ROLE_LABELS[role]}</p>
+      <div className="rounded-3xl bg-bone p-3">
+        <div className="mb-2 flex items-center gap-3 px-1">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-sm font-extrabold text-white">
+            {(name || "?").charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-bold text-ink">{name}</p>
+            <p className="truncate text-xs text-slate">{ROLE_LABELS[role]}</p>
+          </div>
+        </div>
+        <form action={logout}>
+          <button className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-3 py-2.5 text-sm font-bold text-ink ring-1 ring-line transition hover:bg-canvas">
+            <Icon name="logout" size={18} />
+            Sign out
+          </button>
+        </form>
       </div>
-      <form action={logout}>
-        <button className="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-50">
-          Sign out
-        </button>
-      </form>
     </div>
   );
 
   return (
-    <div className="flex h-screen bg-zinc-50">
+    <div className="flex h-screen bg-canvas">
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-zinc-200 bg-white md:flex">
+      <aside className="hidden w-72 shrink-0 flex-col border-r border-line bg-lifted md:flex">
         {brand}
-        <div className="border-t border-zinc-100" />
+        <div className="mx-5 border-t border-line" />
         {nav}
         {signOut}
       </aside>
@@ -107,12 +119,12 @@ export default function Shell({
       {open && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 bg-ink/30 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col bg-white shadow-xl">
+          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col bg-lifted shadow-lift">
             {brand}
-            <div className="border-t border-zinc-100" />
+            <div className="mx-5 border-t border-line" />
             {nav}
             {signOut}
           </aside>
@@ -122,15 +134,22 @@ export default function Shell({
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile top bar */}
-        <header className="flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-3 md:hidden">
+        <header className="flex items-center gap-3 border-b border-line bg-lifted px-4 py-3 md:hidden">
           <button
             onClick={() => setOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-lg"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-bone text-ink"
             aria-label="Open menu"
           >
-            ☰
+            <Icon name="menu" size={22} />
           </button>
-          <span className="font-bold text-zinc-900">Sift Admin</span>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-line">
+              <Image src="/brand/logo-full.png" alt="Sift" width={32} height={32} />
+            </div>
+            <span className="text-lg font-extrabold tracking-tighter text-ink">
+              Sift
+            </span>
+          </div>
         </header>
 
         <main className="min-h-0 flex-1 overflow-auto">{children}</main>

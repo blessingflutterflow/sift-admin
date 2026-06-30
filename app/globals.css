@@ -1,23 +1,99 @@
 @import "tailwindcss";
 
+/* ───────────────────────────────────────────────────────────────────────────
+   Sift Admin — premium design system.
+   Mastercard-inspired (warm cream canvas, ink, oversized radii, soft halos,
+   eyebrow labels) blended with the Sift brand orange. Bigger + bolder type.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Surfaces */
+  --color-canvas: #f3f0ee; /* warm putty body canvas — never pure white */
+  --color-lifted: #fcfbfa; /* paper-on-paper raised sections */
+  --color-bone: #f6f4f1;
+  --color-ink: #141413; /* warm near-black: headings, primary CTAs */
+  --color-charcoal: #262627;
+
+  /* Text */
+  --color-slate: #6b6b6b; /* muted secondary */
+  --color-dust: #b8b1a8; /* whisper / disabled */
+  --color-line: #e7e2db; /* hairline borders on cream */
+
+  /* Brand — Sift orange (our accent in place of Mastercard's signal orange) */
+  --color-sift: #ff6b2c;
+  --color-sift-deep: #e2551c;
+  --color-sift-soft: #fff1e9;
+  --color-ember: #cf4500; /* deep rust for rare emphasis */
+
+  /* Semantic */
+  --color-good: #1f9d6b;
+  --color-good-soft: #e7f6ef;
+  --color-warn: #c98a12;
+  --color-warn-soft: #fbf2dd;
+  --color-bad: #d8453d;
+  --color-bad-soft: #fdeceb;
+
+  --font-sans: var(--font-sofia), "Sofia Sans", Arial, sans-serif;
+
+  /* Soft atmospheric elevation (large spread, low opacity) */
+  --shadow-soft: 0 4px 24px 0 rgba(20, 20, 19, 0.05);
+  --shadow-card: 0 18px 48px 0 rgba(20, 20, 19, 0.07);
+  --shadow-lift: 0 28px 70px 0 rgba(20, 20, 19, 0.1);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3f0ee;
+  --foreground: #141413;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-/* The admin is a light-only design (white cards, zinc text). We intentionally
-   do NOT follow the OS dark theme — otherwise inputs inherit a near-white text
-   colour and become invisible on the white cards. */
-
+html,
 body {
-  background: #ffffff;
-  color: #171717;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Bigger + bolder editorial headings with tight negative tracking. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+/* Eyebrow label: tiny accent dot + uppercase bold tracking (the identity). */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+}
+.eyebrow::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--color-sift);
+}
+
+/* Premium scrollbar on the warm canvas. */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #ddd6cd;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #cfc7bc;
+  background-clip: content-box;
 }

@@ -144,6 +144,8 @@ export async function savePricingAction(formData: FormData) {
     cashEnabled: formData.get("cashEnabled") === "on",
     // City-wide surge applied when no zone covers the pickup (0.5×–5×).
     surgeMultiplier: Math.min(5, Math.max(0.5, num("surgeMultiplier", 1))),
+    // How far (km) a request reaches for a driver. Clamp to a sane 1–100 km.
+    dispatchRadiusKm: Math.min(100, Math.max(1, num("dispatchRadiusKm", 20))),
     tierMultipliers: {
       bike: num("multBike", 0.7),
       go: num("multGo", 1.0),
@@ -319,6 +321,84 @@ export async function deleteAdminAction(formData: FormData) {
   await getAdminDb().collection("admin_users").doc(username).delete();
   await audit("admin.delete", username);
   revalidatePath("/admins");
+}
+
+/** Assign a driver's service category. Dispatch only offers matching requests
+ *  (rides match the tier; parcels go to 'parcel'). Empty = eligible for all. */
+const DRIVER_CATEGORIES = ["bike", "go", "xl", "max", "parcel"];
+export async function setDriverCategoryAction(formData: FormData) {
+  const uid = String(formData.get("uid") ?? "");
+  const category = String(formData.get("category") ?? "");
+  if (!uid) return;
+  const value =
+    DRIVER_CATEGORIES.includes(category) ? category : null; // "" clears it
+  await getAdminDb()
+    .collection("users")
+    .doc(uid)
+    .set({ category: value }, { merge: true });
+  await audit("driver.category", uid, value ?? "any");
+  revalidatePath(`/users/${uid}`);
+}
+
+/** Save driver document expiry dates (licence / PrDP / insurance). Stored as
+ *  ISO yyyy-mm-dd strings on the application so the admin can flag lapses. */
+export async function setDocExpiryAction(formData: FormData) {
+  const uid = String(formData.get("uid") ?? "");
+  if (!uid) return;
+  const clean = (k: string) => {
+    const v = String(formData.get(k) ?? "").trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
+  };
+  const docExpiry = {
+    license: clean("license"),
+    prdp: clean("prdp"),
+    insurance: clean("insurance"),
+  };
+  await getAdminDb()
+    .collection("applications")
+    .doc(uid)
+    .set({ docExpiry }, { merge: true });
+  await audit("driver.docExpiry", uid, JSON.stringify(docExpiry));
+  revalidatePath(`/users/${uid}`);
+}
+
+/** Reply to a user's support thread (admin → user). */
+export async function replyToSupportAction(formData: FormData) {
+  const uid = String(formData.get("uid") ?? "");
+  const text = String(formData.get("text") ?? "").trim();
+  if (!uid || !text) return;
+  const db = getAdminDb();
+  await db
+    .collection("support_threads")
+    .doc(uid)
+    .collection("messages")
+    .add({
+      text,
+      senderRole: "admin",
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  await db.collection("support_threads").doc(uid).set(
+    {
+      lastMessage: text,
+      lastAt: FieldValue.serverTimestamp(),
+      unreadForAdmin: false,
+      unreadForUser: true,
+    },
+    { merge: true }
+  );
+  revalidatePath(`/support/${uid}`);
+  revalidatePath("/support");
+}
+
+/** Mark a support thread read by the admin (no reply). */
+export async function markSupportReadAction(formData: FormData) {
+  const uid = String(formData.get("uid") ?? "");
+  if (!uid) return;
+  await getAdminDb()
+    .collection("support_threads")
+    .doc(uid)
+    .set({ unreadForAdmin: false }, { merge: true });
+  revalidatePath("/support");
 }
 
 /** Block/unblock a user (enforced server-side in dispatch). */

@@ -1,5 +1,6 @@
 import { savePricingAction } from "@/app/actions";
 import { loadPricing } from "@/lib/finance";
+import PageHeader from "@/components/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -7,20 +8,17 @@ export default async function PricingPage() {
   const p = await loadPricing();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900">
-          Pricing
-        </h1>
-        <p className="text-sm text-zinc-500">
-          Live config — the very next quote uses these numbers. Changes are
-          audited.
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl px-4 py-7 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Configuration"
+        icon="pricing"
+        title="Pricing"
+        subtitle="Live config — the very next quote uses these numbers. Changes are audited."
+      />
 
       <form
         action={savePricingAction}
-        className="rounded-2xl border border-zinc-200 bg-white p-6"
+        className="rounded-3xl border border-line bg-lifted p-7 shadow-soft"
       >
         <h2 className="mb-3 text-sm font-bold text-zinc-900">Fare (ZAR)</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -89,6 +87,19 @@ export default async function PricingPage() {
         <p className="mt-2 text-xs text-zinc-400">
           Applied when no zone covers the pickup. 1.0 = no surge. Per-area surge
           is managed under Surge zones.
+        </p>
+
+        <h2 className="mb-3 mt-6 text-sm font-bold text-zinc-900">Dispatch</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <Field
+            label="Max ride distance (km)"
+            name="dispatchRadiusKm"
+            value={p.dispatchRadiusKm ?? 20}
+          />
+        </div>
+        <p className="mt-2 text-xs text-zinc-400">
+          How far from the pickup a request is offered to drivers. Beyond this,
+          a rider gets &ldquo;no drivers available.&rdquo;
         </p>
 
         <button

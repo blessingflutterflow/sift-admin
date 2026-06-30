@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAdminDb } from "@/lib/firebaseAdmin";
@@ -9,8 +10,6 @@ import {
   type AdminRole,
   type AdminSession,
 } from "@/lib/adminAuth";
-
-const GREEN = "#FF6B2C";
 
 async function login(formData: FormData) {
   "use server";
@@ -61,43 +60,59 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-6">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-canvas px-6">
+      {/* Soft brand orbit in the background */}
+      <div className="pointer-events-none absolute -right-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-sift-soft blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-44 -left-44 h-[26rem] w-[26rem] rounded-full bg-sift-soft blur-3xl" />
+
       <form
         action={login}
-        className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm"
+        className="relative w-full max-w-md rounded-[2.5rem] border border-line bg-lifted p-9 shadow-card"
       >
-        <div
-          className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl text-white"
-          style={{ background: GREEN }}
-        >
-          ⚡
+        <div className="mb-7 flex flex-col items-center text-center">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-line">
+            <Image src="/brand/logo-full.png" alt="Sift" width={80} height={80} />
+          </div>
+          <span className="eyebrow mt-5">Operations</span>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tighter text-ink">
+            Sift Admin
+          </h1>
+          <p className="mt-1.5 text-[15px] font-medium text-slate">
+            Sign in to your dashboard
+          </p>
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900">
-          Sift Admin
-        </h1>
-        <p className="mb-6 text-sm text-zinc-500">Sign in to your account.</p>
 
+        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate">
+          Username
+        </label>
         <input
           name="username"
-          placeholder="Username (leave blank for owner)"
+          placeholder="Leave blank for owner"
           autoComplete="username"
-          className="mb-3 w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm text-zinc-900 outline-none focus:border-zinc-500"
+          className="mb-4 w-full rounded-2xl border border-line bg-white px-4 py-3 text-[15px] font-medium text-ink outline-none transition focus:border-sift"
         />
+
+        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate">
+          Password
+        </label>
         <input
           type="password"
           name="password"
-          placeholder="Password"
+          placeholder="••••••••"
           autoComplete="current-password"
           autoFocus
-          className="mb-3 w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm text-zinc-900 outline-none focus:border-zinc-500"
+          className="w-full rounded-2xl border border-line bg-white px-4 py-3 text-[15px] font-medium text-ink outline-none transition focus:border-sift"
         />
+
         {error && (
-          <p className="mb-3 text-sm text-rose-600">Incorrect username or password.</p>
+          <p className="mt-4 rounded-2xl bg-bad-soft px-4 py-2.5 text-sm font-semibold text-bad">
+            Incorrect username or password.
+          </p>
         )}
+
         <button
           type="submit"
-          className="w-full rounded-lg py-2.5 text-sm font-semibold text-white"
-          style={{ background: GREEN }}
+          className="mt-6 w-full rounded-full bg-ink py-3.5 text-base font-bold text-canvas transition hover:bg-charcoal"
         >
           Sign in
         </button>
