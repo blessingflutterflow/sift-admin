@@ -422,18 +422,38 @@ export async function toggleBlockAction(formData: FormData) {
 export async function sendAnnouncementAction(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
-  const raw = String(formData.get("severity") ?? "info");
-  const severity = ["info", "warning", "critical"].includes(raw) ? raw : "info";
+  const rawSev = String(formData.get("severity") ?? "info");
+  const severity = ["info", "warning", "critical"].includes(rawSev)
+    ? rawSev
+    : "info";
+  const rawAud = String(formData.get("audience") ?? "all_drivers");
+  const audience = ["all_drivers", "all_riders", "everyone", "specific"].includes(
+    rawAud
+  )
+    ? rawAud
+    : "all_drivers";
+  // Deduped list of recipient uids — only meaningful when audience is 'specific'.
+  const targetUids =
+    audience === "specific"
+      ? [...new Set(formData.getAll("targetUids").map(String).filter(Boolean))]
+      : [];
   if (!title || !body) return;
+  // A 'specific' send with no one selected is a no-op — don't create an
+  // undeliverable announcement.
+  if (audience === "specific" && targetUids.length === 0) return;
+
   const ref = await getAdminDb().collection("announcements").add({
     title,
     body,
     severity,
-    audience: "drivers",
+    audience,
+    targetUids,
     active: true,
     createdAt: FieldValue.serverTimestamp(),
   });
-  await audit("announcement.send", ref.id, `${severity}: ${title}`);
+  const who =
+    audience === "specific" ? `${targetUids.length} people` : audience;
+  await audit("announcement.send", ref.id, `${severity} → ${who}: ${title}`);
   revalidatePath("/announcements");
 }
 
