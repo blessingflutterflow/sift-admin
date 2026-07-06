@@ -28,9 +28,9 @@ export const ROLE_NAV: Record<AdminRole, string[]> = {
   superadmin: [
     "/", "/rides", "/parcels", "/finance", "/pricing", "/zones",
     "/users", "/applications", "/verifications", "/audit", "/admins",
-    "/drivers", "/support",
+    "/drivers", "/support", "/announcements",
   ],
-  dispatcher: ["/", "/rides", "/parcels", "/drivers"],
+  dispatcher: ["/", "/rides", "/parcels", "/drivers", "/announcements"],
   onboarding: ["/applications", "/verifications", "/users", "/drivers"],
   support: ["/users", "/rides", "/parcels", "/drivers", "/support"],
   finance: ["/finance", "/pricing", "/parcels"],

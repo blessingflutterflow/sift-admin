@@ -413,3 +413,39 @@ export async function toggleBlockAction(formData: FormData) {
   await audit(block ? "user.block" : "user.unblock", uid);
   revalidatePath("/users");
 }
+
+/**
+ * Broadcast a full-screen announcement to all drivers. Writing the doc triggers
+ * onAnnouncementCreated, which pushes it to the `drivers` FCM topic; the driver
+ * app streams active ones and shows them full-screen until each driver dismisses.
+ */
+export async function sendAnnouncementAction(formData: FormData) {
+  const title = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+  const raw = String(formData.get("severity") ?? "info");
+  const severity = ["info", "warning", "critical"].includes(raw) ? raw : "info";
+  if (!title || !body) return;
+  const ref = await getAdminDb().collection("announcements").add({
+    title,
+    body,
+    severity,
+    audience: "drivers",
+    active: true,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+  await audit("announcement.send", ref.id, `${severity}: ${title}`);
+  revalidatePath("/announcements");
+}
+
+/** Turn an announcement on/off. Off pulls it from every driver at once. */
+export async function toggleAnnouncementAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const active = String(formData.get("active") ?? "") === "true";
+  if (!id) return;
+  await getAdminDb()
+    .collection("announcements")
+    .doc(id)
+    .set({ active }, { merge: true });
+  await audit(active ? "announcement.activate" : "announcement.deactivate", id);
+  revalidatePath("/announcements");
+}

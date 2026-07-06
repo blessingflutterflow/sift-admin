@@ -18,6 +18,7 @@ export const ICONS: Record<string, string> = {
   support: "solar:chat-round-line-bold-duotone",
   admins: "solar:shield-user-bold-duotone",
   audit: "solar:clipboard-list-bold-duotone",
+  announcements: "solar:megaphone-bold-duotone",
   // ui
   search: "solar:magnifer-bold-duotone",
   logout: "solar:logout-2-bold-duotone",
